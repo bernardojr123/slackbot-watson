@@ -5,8 +5,7 @@ module.exports = function(controller, contextos, assistant) {
 
         assistant.sendMessage(String(message.text), contextos[key_user])
             .then(response => {
-                // slackController.log('Response from Watson received');
-                console.log('quase que funciona');
+                // slackController.log('Response from Watson received')
                 console.log(response);
                 // do something here and then reply to the user through slack
                 // note: Watson's response text is stored in "response.output.text"

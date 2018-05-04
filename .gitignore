@@ -4,3 +4,5 @@ components/routes/_*
 .idea/
 .env
 components
+package-lock.json
+.data/
