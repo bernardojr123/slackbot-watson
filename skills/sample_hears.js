@@ -9,11 +9,10 @@ respond immediately with a single line response.
 
 */
 
-module.exports = function(controller, watsonAssistant) {
+module.exports = function(controller, contextos, assistant) {
 
     controller.hears(['^hello$'], 'direct_message,direct_mention', function(bot, message) {
-      console.log(message);
-      bot.reply(message, "Hi there, you're on workspace: " + message.text)
+        bot.reply(message, "Hi there, you're on workspace: " + message.team)
     });
 
 

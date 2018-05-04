@@ -1,22 +1,25 @@
-module.exports = function (controller, watsonAssistant) {
-
+module.exports = function(controller, contextos, assistant) {
 
     controller.on('direct_message', function(bot, message) {
-        console.log(message);
+        var key_user = message.channel+message.user;
 
-        watsonAssistant.sendToWatson({
-            workspace_id: process.env.annaWorkspaceId,
-            input: {'text': message.text}
-
-        },  function(err, response) {
-            if (err)
-                console.log('error:', err);
-            else
-                var resp = response.watsonData.output.text;
+        assistant.sendMessage(String(message.text), contextos[key_user])
+            .then(response => {
+                // slackController.log('Response from Watson received');
+                console.log('quase que funciona');
                 console.log(response);
-                bot.reply(message, resp);
-        });
-
+                // do something here and then reply to the user through slack
+                // note: Watson's response text is stored in "response.output.text"
+                // ("join('\n')" is for cases when the response is multiline)
+                contextos[key_user] = response.context;
+                bot.reply(message, response.output.text.join('\n'));
+            })
+            .catch(err => {
+                console.log(err);
+                console.error(JSON.stringify(err, null, 2));
+            });
     });
+
+
 
 };

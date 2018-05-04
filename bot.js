@@ -12,27 +12,14 @@ This is a sample Slack bot built with Botkit.
 var env = require('node-env-file');
 env(__dirname + '/.env');
 
-var AssistantV1 = require('watson-developer-cloud/assistant/v1');
-//
-// var watsonAssistant = new AssistantV1({
-//     version: process.env.watsonVersion,
-//     username: process.env.watsonUsername,
-//     password: process.env.watsonPassword
-// });
-
-
-var watsonAssistant = require('botkit-middleware-watson')({
-    version_date: process.env.watsonVersion,
-    username: process.env.watsonUsername,
-    password: process.env.watsonPassword,
-    workspace_id: process.env.annaWorkspaceId
-});
 
 if (!process.env.clientId || !process.env.clientSecret || !process.env.PORT) {
-    console.log('Error: Specify clientId clientSecret and PORT in environment');
-    usage_tip();
-    process.exit(1);
+  console.log('Error: Specify clientId clientSecret and PORT in environment');
+  usage_tip();
+  process.exit(1);
 }
+
+var contextos = {};
 
 var Botkit = require('botkit');
 var debug = require('debug')('botkit:main');
@@ -51,8 +38,6 @@ var controller = Botkit.slackbot(bot_options);
 
 controller.startTicking();
 
-controller.middleware.receive.use(watsonAssistant.receive);
-
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
 
@@ -62,9 +47,10 @@ require(__dirname + '/components/user_registration.js')(controller);
 
 // Send an onboarding message when a new team joins
 require(__dirname + '/components/onboarding.js')(controller);
+var assistant = require("./components/watsonAssistant");
 
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
-    require("./skills/" + file)(controller, watsonAssistant);
+  require("./skills/" + file)(controller, contextos, assistant);
 });
 
