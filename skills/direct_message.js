@@ -7,6 +7,10 @@ module.exports = function(controller, contextos, assistant) {
             .then(response => {
                 // slackController.log('Response from Watson received')
                 console.log(response);
+                botoes = response.context.botoes;
+                if (typeof botoes !== 'undefined' && botoes.length > 0) {
+                    
+                }
                 // do something here and then reply to the user through slack
                 // note: Watson's response text is stored in "response.output.text"
                 // ("join('\n')" is for cases when the response is multiline)
